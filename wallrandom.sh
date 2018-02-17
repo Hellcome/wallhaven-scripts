@@ -11,7 +11,7 @@ purity=100
 categories=011
 attleast=1920x1080
 
-html=$(curl -s "$site/search?q=&categories=$categories&purity=$purity&atleast=$atleast&sorting=$favorites&order=desc&page=$(shuf -i1-5 -n1)" | grep -o '<a class="preview" href="https://alpha.wallhaven.cc/wallpaper/[0-9]*"' | sed  's .\{24\}  ' | tr -d '"' | awk 'BEGIN { srand() }
+html=$(curl -s "$site/search?q=&categories=$categories&purity=$purity&atleast=$atleast&sorting=$sorting&order=desc&page=$(shuf -i1-5 -n1)" | grep -o '<a class="preview" href="https://alpha.wallhaven.cc/wallpaper/[0-9]*"' | sed  's .\{24\}  ' | tr -d '"' | awk 'BEGIN { srand() }
 { l[NR]=$0 } END { print l[int(rand() * NR + 1)] }' )
 
 
