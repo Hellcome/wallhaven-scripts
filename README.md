@@ -2,8 +2,8 @@
 
 <h1>Wallrandom</h1>
 
-Save random pictures and set to wallpaper from wallhaven.cc.
-This script has a function auto change, use -t time ins sec.
+Save random pictures and set to wallpaper from wallhaven.cc.<br>
+This script has a function auto change, use -t time ins sec.</br>
 
 <h1>Savethis</h1>
 
