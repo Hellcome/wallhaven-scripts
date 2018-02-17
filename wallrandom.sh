@@ -11,6 +11,18 @@ purity=100
 categories=011
 attleast=1920x1080
 
+# time flag
+
+while getopts ":d:rt:" o; do 
+  case $o in
+    t) time=$OPTARG;;
+  esac
+done
+
+##
+
+while true ; do
+
 html=$(curl -s "$site/search?q=&categories=$categories&purity=$purity&atleast=$atleast&sorting=$sorting&order=desc&page=$(shuf -i1-5 -n1)" | grep -o '<a class="preview" href="https://alpha.wallhaven.cc/wallpaper/[0-9]*"' | sed  's .\{24\}  ' | tr -d '"' | awk 'BEGIN { srand() }
 { l[NR]=$0 } END { print l[int(rand() * NR + 1)] }' )
 
@@ -34,4 +46,15 @@ gsettings set org.gnome.desktop.background picture-uri "file:///$dir/$wall"
 
 echo $wall > wall.txt
 
-exit 0
+## Time functions
+
+	if [[ -z "${time}" ]] ; then #If time is not set, break loop (so the script finishes).
+		break
+	fi
+	if test ${time} -lt 0 ; then #If time is negative (illegal), break loop (so the script finishes).
+		echo "ERROR: Time (-t) needs to be set to a positive number (in seconds). EXITING!"
+		break
+	fi
+	sleep $time
+  
+done
