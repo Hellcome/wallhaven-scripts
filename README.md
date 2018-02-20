@@ -14,6 +14,8 @@ If you happen upon an awesome image that you want to keep, run the ./savethis sc
   
 <h5>Sorting</h5> - you can change the sorting by changing comment lines
 
+<h5>NSFW</h5> - change purity line to 001, and add your username and password in the box Needed for NSFW
+
 
 <h2>Install</h2>
 
