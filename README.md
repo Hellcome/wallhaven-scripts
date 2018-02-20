@@ -10,7 +10,7 @@ If you happen upon an awesome image that you want to keep, run the ./savethis sc
 
 <h2>Features</h2>
 
-<h5>Auto change</h5> - set time to auto change wallpaper, example <b>./wallrandom.sh -t 1 /1m /1h
+<h5>Auto change</h5> - set time to auto change wallpaper, example <b>./wallrandom.sh -t 1 /1m /1h</b>
   
 <h5>Sorting</h5> - you can change the sorting by changing comment lines
 
