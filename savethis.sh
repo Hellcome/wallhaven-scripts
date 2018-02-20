@@ -6,4 +6,4 @@ folder=$HOME/Pictures/wallhaven #your wallpapers dir
 
 cp $dir/$pic $folder/$pic
 
-echo saved :3 
+echo $pic saved to $folder/$pic 
