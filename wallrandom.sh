@@ -70,7 +70,7 @@ then
     html=$(curl -s --cookie cookies.txt "$siteURL" | grep -o '<a class="preview" href="https://alpha.wallhaven.cc/wallpaper/[0-9]*"' | sed  's .\{24\}  ' | tr -d '"' | awk 'BEGIN { srand() }
 { l[NR]=$0 } END { print l[int(rand() * NR + 1)] }' )
 
- wall=$(curl -s --cookie cookies.txt "$html" | grep -Po '(?<=src="//wallpapers.wallhaven.cc/wallpapers/full/)[^"]*(jpg|png)')
+ wall=$(curl -s --cookie cookies.txt "$html" | grep -Po '(?<=src="//wallpapers.wallhaven.cc/wallpapers/full/)[^"]*(jpg|png|gif|bmp|jpeg)')
 
 
  wget -q "$picURL/$wall"
@@ -92,7 +92,7 @@ then
  html=$(curl -s "$siteURL" | grep -o '<a class="preview" href="https://alpha.wallhaven.cc/wallpaper/[0-9]*"' | sed  's .\{24\}  ' | tr -d '"' | awk 'BEGIN { srand() }
 { l[NR]=$0 } END { print l[int(rand() * NR + 1)] }'  )
 
- wall=$(curl -s "$html" | grep -Po '(?<=src="//wallpapers.wallhaven.cc/wallpapers/full/)[^"]*(jpg|png)')
+ wall=$(curl -s "$html" | grep -Po '(?<=src="//wallpapers.wallhaven.cc/wallpapers/full/)[^"]*(jpg|png|gif|bmp|jpeg)')
 
  cd $dir
 
