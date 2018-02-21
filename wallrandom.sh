@@ -1,7 +1,8 @@
 #!/bin/bash
 
 ##
-
+blue="$(tput setaf 4)"
+nc="$(tput sgr0)"
 ##Wallhaven setings
 site=https://alpha.wallhaven.cc
 
@@ -84,7 +85,7 @@ then
  gsettings set org.gnome.desktop.background picture-uri "file:///$dir/$wall"
 
  echo $wall > wall.txt
- 
+ echo "$blue$wall$nc set to wallpaper";echo "$blue$html$nc - link to wallhaven.cc"
  else 
 
  
@@ -104,7 +105,7 @@ then
  gsettings set org.gnome.desktop.background picture-uri "file:///$dir/$wall"
 
  echo $wall > wall.txt
-
+ echo "$blue$wall$nc set to wallpaper";echo "$blue$html$nc - link to wallhaven.cc"
  fi
 
 
