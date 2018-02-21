@@ -11,7 +11,7 @@ If you happen upon an awesome image that you want to keep, run the ./savethis.sh
 
 <h2>Features</h2>
 This script more sorting options<br> 
-
+<br> 
 Command line switches are optional. The following switches are recognized.<br>
 -s -- Sorting options, use favorites | random | date_added | views | toplist | revelance<br>
 -r -- Range options, use 1d | 3d | 1w | 1M | 3M | 6M | 1y<br>
