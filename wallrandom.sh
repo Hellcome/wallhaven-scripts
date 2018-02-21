@@ -19,11 +19,11 @@ function HELP {
 ###   Needed for NSFW   ###
 #####################################
 # Enter your Username
-USER="Hellcome"
+USER=""
 # Enter your password
 # if your password contains ' you need to escape it
 # replace all ' with '"'"'
-PASS="5q4w3e6r"
+PASS=""
 #####################################
 ### End needed for NSFW/Favorites ###
 #####################################
