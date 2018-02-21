@@ -6,7 +6,8 @@ Set to wallpaper random pictures from wallhaven.cc.<br>
 
 <h2>Savethis</h2>
 
-If you happen upon an awesome image that you want to keep, run the ./savethis script to save it to your wallpaper dir.
+Change your wallpaper dir in comment line.
+If you happen upon an awesome image that you want to keep, run the ./savethis.sh to save it to your wallpaper dir.
 
 <h2>Features</h2>
 
