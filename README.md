@@ -25,6 +25,8 @@ use -h to see help
 
 <h2>Install</h2>
 
-copy scripts to you home/bin
-change settings scrips as you like in comment lines.
-use ./wallrandom.sh ./savethis.sh
+copy scripts to you home/bin or other <br>
+sudo chmod +x wallrandom.sh<br>
+sudo chmod +x savethis.sh<br>
+change settings scrips as you like in comment lines.<br>
+use ./wallrandom.sh ./savethis.sh<br>
