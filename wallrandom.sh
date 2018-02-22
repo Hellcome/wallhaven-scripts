@@ -9,7 +9,7 @@ function HELP {
   echo "$blue-r$nc -- Range options, use$blue 1d | 3d | 1w | 1M | 3M | 6M | 1y$nc"
   echo "$blue-c$nc -- Categories options, use$blue 100 - General | 110 - General + Anime | 101 - General + People | 111 - ALL  | 011 - Anime + People | 010 - Anime | 001 - People$nc"
   echo "$blue-t$nc -- Time options, use$blue 10 | 10m | 10h$nc"
-  echo "$blue-p$nc -- Purity options, use$blue 100 - SWF | 011 - Scetchy | 001 -NSFW (Need login, change lines in Needed for NSFW block)"
+  echo "$blue-p$nc -- Purity options, use$blue 100 - SWF | 011 - Scetchy | 001 -NSFW | 110 - SFW + Scetchy | 101 - Scetchy + NSFW | 111 - ALL (For NSFW need login, change lines in Needed for NSFW block)"
   echo "examle$blue ./wallrandom.sh -s toplist -r 1M -c 010 -t 10m -p 100$nc"
   exit 1
 }
@@ -84,7 +84,7 @@ while getopts ":t:s:r:c:p:h" o; do
         echo "categotries set to $blue$categories$nc" 
         fi ;;
     p) purity=$OPTARG
-        if [ $purity != 001 ] && [ $purity != 100 ] && [ $purity != 010 ] ; then
+        if [ $purity != 001 ] && [ $purity != 100 ] && [ $purity != 010 ] && [ $purity != 111 ] && [ $purity != 011 ] [ $purity != 101 ]  ; then
         echo "$red invalid parameter ($purity)$nc use$blue 100 - SFW | 001 - NSFW | 011 - Scetchy$nc" ; exit 0 
         else 
         echo "purity set to $blue$purity$nc"
