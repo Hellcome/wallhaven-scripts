@@ -18,6 +18,7 @@ Command line switches are optional. The following switches are recognized.<br>
 -r -- Catogories options | General →  g, general | General and Anime →  ga | General and People →  gp | all →  all | Anime and People →  ap | Anime →  a, anime | People →  p, people<br>
 -t -- Time options, use 10 | 10m | 10h<br>
 -p -- Purity options, use 100 - SWF | 011 - Scetchy | 001 -NSFW | 110 - SFW + Scetchy | 101 - Scetchy + NSFW | 111 - ALL (For NSFW need login, change lines in Needed for NSFW block)<br>
+-f -- search optinons<br>
 examle ./wallrandom.sh -s toplist -r 1M -c anime -t 10m -p 100<br>
 
 
@@ -30,3 +31,5 @@ sudo chmod +x wallrandom.sh<br>
 sudo chmod +x savethis.sh<br>
 change settings scrips as you like in comment lines.<br>
 use ./wallrandom.sh ./savethis.sh<br>
+
+Perfectly work on my elementary os 0.4.1, and other.
