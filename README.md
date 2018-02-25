@@ -19,7 +19,7 @@ Command line switches are optional. The following switches are recognized.<br>
 -t -- Time options, use 10 | 10m | 10h<br>
 -p -- Purity options, use 100 - SWF | 011 - Scetchy | 001 -NSFW | 110 - SFW + Scetchy | 101 - Scetchy + NSFW | 111 - ALL (For NSFW need login, change lines in Needed for NSFW block)<br>
 -f -- search optinons<br>
-examle ./wallrandom.sh -s toplist -r 1M -c anime -t 10m -p 100<br>
+examle ./wallrandom.sh -s toplist -r 1M -c anime -t 10m -p 100 -f girl<br>
 
 
 use -h to see help
