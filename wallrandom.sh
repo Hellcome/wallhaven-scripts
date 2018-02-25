@@ -2,7 +2,6 @@
 
 ##
 
-
 #Help function
 function HELP {
   echo "Command line switches are optional. The following switches are recognized."
@@ -21,11 +20,11 @@ function HELP {
 ###   Needed for NSFW   ###
 #####################################
 # Enter your Username
-USER=""
+USER="Hellcome"
 # Enter your password
 # if your password contains ' you need to escape it
 # replace all ' with '"'"'
-PASS=""
+PASS="5q4w3e6r"
 #####################################
 ### End needed for NSFW/Favorites ###
 #####################################
@@ -52,6 +51,7 @@ green="$(tput setaf 14)"
 blue="$(tput setaf 4)"
 nc="$(tput sgr0)"
 search=""
+random=$(shuf -i 1-5 -n1)
 
 ##Wallhaven setings
 site=https://alpha.wallhaven.cc
@@ -60,7 +60,6 @@ purity=100
 categories=111 # 100 - General / 110 - General + Anime / 101 - General + People / 111 - ALL / 011 - Anime + People / 010 - Anime / 001 - People /
 attleast=1920x1080 # your resolution
 topRange=6M # sort by date 1d / 3d / 1w / 1M / 3M / 6M / 12M / 1y
-random=$(shuf -i1-5 -n1) # specify the desired number of pages. Сhane this -i1-5
 search=''
 ## Flags
 ## Functions 
@@ -144,37 +143,19 @@ search=$OPTARG
 echo "search $blue$search$nc"
 } #time
 
-####Functions#####
-
-####Flags#########
-
-
-while getopts ":t:s:r:c:p:h:z:f:" o; do 
-  case $o in
-    t) loop ;; 
-    s) sorti ;;
-    r) range  ;;
-    c) cat ;;
-    p) pur ;;
-    h) HELP ;;
-    z) page ;;
-    f) srch ; shift ;;
-    *) HELP ;;       
-esac
-done
-
-
-while true ; do
-
-if  [ "$purity" == 001 ]
-
-then
+function elsepurity {
 
 cd $dir  
 
 login "$USER" "$PASS"
 
+if [ -z "$USER" ]  ; then
+
+echo "$(tput setaf 4)Pls check login and password $USER$nc"
+exit 1;
+else
 echo "$(tput setaf 4)successful login $USER$nc"
+fi
 
 html=$(curl -s --cookie cookies.txt "$site/search?q=$search&categories=$categories&purity=$purity&atleast=$atleast&topRange=$topRange&sorting=$sorting&order=desc&page=$random" | grep -o '<a class="preview" href="https://alpha.wallhaven.cc/wallpaper/[0-9]*"' | sed  's .\{24\}  ' | tr -d '"' | awk 'BEGIN { srand() }
 { l[NR]=$0 } END { print l[int(rand() * NR + 1)] }' )
@@ -196,10 +177,10 @@ gsettings set org.gnome.desktop.background picture-uri "file:///$dir/$wall"
 echo $wall > wall.txt
 echo "$blue$wall$nc set to wallpaper";echo "$blue$html$nc"
 
+}
 
-else 
+function search {
 
- 
 html=$(curl -s "$site/search?q=$search&categories=$categories&purity=$purity&atleast=$atleast&topRange=$topRange&sorting=$sorting&order=desc&page=$random" | grep -o '<a class="preview" href="https://alpha.wallhaven.cc/wallpaper/[0-9]*"' | sed  's .\{24\}  ' | tr -d '"' | awk 'BEGIN { srand() }
 { l[NR]=$0 } END { print l[int(rand() * NR + 1)] }'  )
 
@@ -218,7 +199,65 @@ gsettings set org.gnome.desktop.background picture-uri "file:///$dir/$wall"
 echo $wall > wall.txt
 echo "$blue$wall$nc set to wallpaer";echo "$blue$html$nc"
 
+}
+
+function default {
+
+html=$(curl -s "$site/search?q=$search&categories=$categories&purity=$purity&atleast=$atleast&topRange=$topRange&sorting=$sorting&order=desc&page=$random" | grep -o '<a class="preview" href="https://alpha.wallhaven.cc/wallpaper/[0-9]*"' | sed  's .\{24\}  ' | tr -d '"' | awk 'BEGIN { srand() }
+{ l[NR]=$0 } END { print l[int(rand() * NR + 1)] }'  )
+
+wall=$(curl -s "$html" | grep -Po '(?<=src="//wallpapers.wallhaven.cc/wallpapers/full/)[^"]*(jpg|png|gif|bmp|jpeg)')
+
+cd $dir
+
+wget -q "$picURL/$wall"
+
+rm=$(head -1 $HOME/bin/wall.txt)
+rm -f $rm
+rm -f wall.txt
+
+gsettings set org.gnome.desktop.background picture-uri "file:///$dir/$wall"
+
+echo $wall > wall.txt
+echo "$blue$wall$nc set to wallpaer";echo "$blue$html$nc"
+
+}
+
+####Functions#####
+
+####Flags#########
+
+
+while getopts ":f:t:s:r:c:p:h:z:" o; do 
+  case $o in
+    t) loop ;; 
+    s) sorti ;;
+    r) range  ;;
+    c) cat ;;
+    p) pur ;;
+    h) HELP ;;
+    z) page ;;
+    f) srch ;;
+    *) HELP ;;       
+esac
+done
+
+
+while true ; do
+
+######
+
+if  [ "$purity" == 001 ] ; then
+
+elsepurity 
+
+else
+
+default
+
 fi
+#######
+
 ## Time functions
 
 	if [[ -z "${time}" ]] ; then #If time is not set, break loop (so the script finishes).
