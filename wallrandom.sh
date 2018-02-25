@@ -1,7 +1,7 @@
 #!/bin/bash
 
 ##
-
+ 
 #Help function
 function HELP {
   echo "Command line switches are optional. The following switches are recognized."
