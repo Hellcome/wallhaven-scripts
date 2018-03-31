@@ -61,6 +61,9 @@ categories=111 # 100 - General / 110 - General + Anime / 101 - General + People 
 attleast=1920x1080 # your resolution
 topRange=6M # sort by date 1d / 3d / 1w / 1M / 3M / 6M / 12M / 1y
 search=''
+userr=$OPTARG
+
+
 ## Flags
 ## Functions 
 
@@ -137,6 +140,10 @@ time=$OPTARG
 echo "auto change set to $blue$time$nc" 
 } #time
 
+function user {
+userr=$OPTARG
+echo "$blue$userr$nc wallpapers" 
+} #user
 
 function srch {
 search=$OPTARG
@@ -197,7 +204,7 @@ rm -f wall.txt
 gsettings set org.gnome.desktop.background picture-uri "file:///$dir/$wall"
 
 echo $wall > wall.txt
-echo "$blue$wall$nc set to wallpaer";echo "$blue$html$nc"
+echo "$blue$wall$nc set to wallpaper";echo "$blue$html$nc"
 
 }
 
@@ -219,7 +226,39 @@ rm -f wall.txt
 gsettings set org.gnome.desktop.background picture-uri "file:///$dir/$wall"
 
 echo $wall > wall.txt
-echo "$blue$wall$nc set to wallpaer";echo "$blue$html$nc"
+echo "$blue$wall$nc set to wallpaper";echo "$blue$html$nc"
+
+}
+
+function userwall {
+
+pagecount=$(curl -s "https://alpha.wallhaven.cc/user/AksumkA/uploads" | grep -Po '<header\s+class="thumb-listing-page-header">\K.*?(?=</header>)' | grep -o '</span> / [0-9]*' | awk -F '[^0-9]+' '{OFS=" "; for(i=1; i<=NF; ++i) if ($i != "") print($i)}' )
+
+randompage=$(shuf -i 1-$pagecount -n1)
+
+echo $randompage
+
+html=$(curl -s "https://alpha.wallhaven.cc/user/$userr/uploads?page=$randompage" | grep -o '<a class="preview" href="https://alpha.wallhaven.cc/wallpaper/[0-9]*"' | sed  's .\{24\}  ' | tr -d '"' | awk 'BEGIN { srand() }
+{ l[NR]=$0 } END { print l[int(rand() * NR + 1)] }'  )
+
+echo $html
+
+wall=$(curl -s "$html" | grep -Po '(?<=src="//wallpapers.wallhaven.cc/wallpapers/full/)[^"]*(jpg|png|gif|bmp|jpeg)')
+
+cd $dir
+
+wget -q "$picURL/$wall"
+
+rm=$(head -1 $HOME/bin/wall.txt)
+rm -f $rm
+#rm -f wall.txt
+
+gsettings set org.gnome.desktop.background picture-uri "file:///$dir/$wall"
+
+echo $wall > wall.txt
+echo "$blue$wall$nc set to wallpaper";echo "$blue$html$nc"
+
+exit 0
 
 }
 
@@ -228,7 +267,7 @@ echo "$blue$wall$nc set to wallpaer";echo "$blue$html$nc"
 ####Flags#########
 
 
-while getopts ":f:t:s:r:c:p:h:z:" o; do 
+while getopts ":f:t:s:r:c:p:h:z:u:" o; do 
   case $o in
     t) loop ;; 
     s) sorti ;;
@@ -238,6 +277,7 @@ while getopts ":f:t:s:r:c:p:h:z:" o; do
     h) HELP ;;
     z) page ;;
     f) srch ;;
+    u) user ;;
     *) HELP ;;       
 esac
 done
@@ -251,11 +291,16 @@ if  [ "$purity" == 001 ] ; then
 
 elsepurity 
 
-else
+fi
+
+if [ -n "$userr" ] ; then
+
+userwall
+
+fi
 
 default
 
-fi
 #######
 
 ## Time functions
