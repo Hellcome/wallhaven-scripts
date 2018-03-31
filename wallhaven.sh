@@ -232,16 +232,12 @@ echo "$blue$wall$nc set to wallpaper";echo "$blue$html$nc"
 
 function userwall {
 
-pagecount=$(curl -s "https://alpha.wallhaven.cc/user/AksumkA/uploads" | grep -Po '<header\s+class="thumb-listing-page-header">\K.*?(?=</header>)' | grep -o '</span> / [0-9]*' | awk -F '[^0-9]+' '{OFS=" "; for(i=1; i<=NF; ++i) if ($i != "") print($i)}' )
+pagecount=$(curl -s "https://alpha.wallhaven.cc/user/$userr/uploads" | grep -Po '<header\s+class="thumb-listing-page-header">\K.*?(?=</header>)' | grep -o '</span> / [0-9]*' | awk -F '[^0-9]+' '{OFS=" "; for(i=1; i<=NF; ++i) if ($i != "") print($i)}' )
 
 randompage=$(shuf -i 1-$pagecount -n1)
 
-echo $randompage
-
 html=$(curl -s "https://alpha.wallhaven.cc/user/$userr/uploads?page=$randompage" | grep -o '<a class="preview" href="https://alpha.wallhaven.cc/wallpaper/[0-9]*"' | sed  's .\{24\}  ' | tr -d '"' | awk 'BEGIN { srand() }
 { l[NR]=$0 } END { print l[int(rand() * NR + 1)] }'  )
-
-echo $html
 
 wall=$(curl -s "$html" | grep -Po '(?<=src="//wallpapers.wallhaven.cc/wallpapers/full/)[^"]*(jpg|png|gif|bmp|jpeg)')
 
