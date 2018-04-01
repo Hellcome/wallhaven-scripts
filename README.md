@@ -11,7 +11,7 @@ Save awesome wallpaper, run ./savethis.sh to save it to your wallpaper dir.
 
 <h2>Features</h2>
 
-<b>All sorting options for <br> walhaven.cc. <br>
+<b>All sorting options walhaven.cc. <br>
 NSFW. <br>
 Save curent wallpaper. <br>
 Search wallpapers. <br>
