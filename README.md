@@ -7,17 +7,17 @@ Set to wallpaper random pictures from wallhaven.cc <br>
 <h2>Savethis</h2>
 
 Change your wallpaper dir in comment line.<br>
-Sav awesome wallpaper, run ./savethis.sh to save it to your wallpaper dir.
+Save awesome wallpaper, run ./savethis.sh to save it to your wallpaper dir.
 
 <h2>Features</h2>
 This script more features<br> 
 <br> 
-OK lets go: 
-All sorting options for walhaven.cc.
-NSFW.
-Save curent wallpaper.
-Search wallpapers.
-Pick User.
+OK lets go <br>
+All sorting options for <br> walhaven.cc. <br>
+NSFW. <br>
+Save curent wallpaper. <br>
+Search wallpapers. <br>
+Pick User. <br>
 
 examle wallhaven -s toplist -r 1M -c anime -t 10m -p 100 -f girl<br>
 
