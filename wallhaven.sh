@@ -11,7 +11,10 @@ function HELP {
   echo "$blue-t$nc -- Time options, use$blue 10 | 10m | 10h$nc"
   echo "$blue-p$nc -- Purity options, use$blue 100 - SWF | 011 - Scetchy | 001 -NSFW | 110 - SFW + Scetchy | 101 - Scetchy + NSFW | 111 - ALL (For NSFW need login, change lines in Needed for NSFW block)"
   echo "$blue-f$nc -- Search options"
-  echo "examle$blue ./wallrandom.sh -s toplist -r 1M -c anime -f girl -t 10m -p 100$nc"
+  echo "$blue-u$nc -- Pick user"
+  echo "$blue-z$nc -- Set page range to sh"
+  echo "examle$blue ./wallrandom.sh -c a -s toplist  -u Hellcome -z 3 $nc"
+  echo  
   exit 1
 }
 ##
@@ -46,15 +49,18 @@ function login {
 
 dir=$HOME/bin #your scripts dir
 picURL=https://alpha.wallhaven.cc/wallpapers/full
+siteURL=https://alpha.wallhaven.cc
 red="$(tput setaf 1)"
 green="$(tput setaf 14)"
 blue="$(tput setaf 4)"
 nc="$(tput sgr0)"
 search=""
-random=$(shuf -i 1-5 -n1)
+page=5
+random=$(shuf -i 1-$page -n1)
+
+
 
 ##Wallhaven setings
-site=https://alpha.wallhaven.cc
 sorting=toplist #Relevance / Random / Date Added / Views / Favorites / Toplist
 purity=100 
 categories=111 # 100 - General / 110 - General + Anime / 101 - General + People / 111 - ALL / 011 - Anime + People / 010 - Anime / 001 - People /
@@ -67,7 +73,7 @@ userr=$OPTARG
 ## Flags
 ## Functions 
 
-function cat {
+                                                                              function cat {
 
 categories=$OPTARG
 
@@ -107,7 +113,8 @@ if [ $categories != general ] && [ $categories != g ] && [ $categories != ga ] &
 
 } #categories
 
-function range {
+                                                                             function range {
+
 topRange=$OPTARG
        if [ $topRange != 1d ] && [ $topRange != 3d ] && [ $topRange != 1w ] && [ $topRange != 1M ] && [ $topRange != 3M ] && [ $topRange != 6M ] && [ $topRange != 1y ] ; then
         echo "$red invalid parameter ($topRange)$nc use$blue 1d | 3d | 1w | 1M | 3M | 6M | 1y$nc" ; exit 0 
@@ -116,7 +123,8 @@ topRange=$OPTARG
         fi 
 } #Toprange
 
-function sorti {
+                                                                             function sorti {
+
 
 sorting=$OPTARG
         if [ $sorting != favorites ] && [ $sorting != toplist ] && [ $sorting != random ] && [ $sorting != date_added ] && [ $sorting != views ] && [ $sorting != relevance ] ; then
@@ -126,7 +134,8 @@ sorting=$OPTARG
         fi
 } #sorting
 
-function pur {
+                                                                             function pur {
+
 purity=$OPTARG
         if [ $purity != 001 ] && [ $purity != 100 ] && [ $purity != 010 ] && [ $purity != 111 ] && [ $purity != 011 ] && [ $purity != 101 ]  ; then
         echo "$red invalid parameter ($purity)$nc use$blue 100 - SWF | 011 - Scetchy | 001 -NSFW | 110 - SFW + Scetchy | 101 - Scetchy + NSFW | 111 - ALL (For NSFW need login, change lines in Needed for NSFW block)$nc" ; exit 0 
@@ -135,22 +144,29 @@ purity=$OPTARG
         fi 
 } #purity
 
-function loop {
+                                                                             function loop {
+
 time=$OPTARG
 echo "auto change set to $blue$time$nc" 
 } #time
 
-function user {
+                                                                             function user {
+
 userr=$OPTARG
 echo "$blue$userr$nc wallpapers" 
 } #user
 
-function srch {
+                                                                             function srch {
+
 search=$OPTARG
 echo "search $blue$search$nc"
-} #time
+} #search
 
-function elsepurity {
+                                                                             function page {
+page=$OPTARG
+} #page
+
+                                                                             function elsepurity { # IF you use NSFW
 
 cd $dir  
 
@@ -183,13 +199,18 @@ gsettings set org.gnome.desktop.background picture-uri "file:///$dir/$wall"
 
 echo $wall > wall.txt
 echo "$blue$wall$nc set to wallpaper";echo "$blue$html$nc"
-
+                                                                 
 }
 
-function search {
 
-html=$(curl -s "$site/search?q=$search&categories=$categories&purity=$purity&atleast=$atleast&topRange=$topRange&sorting=$sorting&order=desc&page=$random" | grep -o '<a class="preview" href="https://alpha.wallhaven.cc/wallpaper/[0-9]*"' | sed  's .\{24\}  ' | tr -d '"' | awk 'BEGIN { srand() }
+                                                                           function default { # Default function
+
+randompage=$(shuf -i 1-$page -n1)
+
+html=$(curl -s "$siteURL/search?q=&categories=$categories&purity=$purity&atleast=$atleast&topRange=$topRange&sorting=$sorting&order=desc&page=$randompage" | grep -o '<a class="preview" href="https://alpha.wallhaven.cc/wallpaper/[0-9]*"' | sed  's .\{24\}  ' | tr -d '"' | awk 'BEGIN { srand() }
 { l[NR]=$0 } END { print l[int(rand() * NR + 1)] }'  )
+
+echo "set $blue$page page to shuffle"
 
 wall=$(curl -s "$html" | grep -Po '(?<=src="//wallpapers.wallhaven.cc/wallpapers/full/)[^"]*(jpg|png|gif|bmp|jpeg)')
 
@@ -205,39 +226,33 @@ gsettings set org.gnome.desktop.background picture-uri "file:///$dir/$wall"
 
 echo $wall > wall.txt
 echo "$blue$wall$nc set to wallpaper";echo "$blue$html$nc"
-
+                                                           
 }
 
-function default {
+                                                                         function userwall { # IF you pick User
 
-html=$(curl -s "$site/search?q=$search&categories=$categories&purity=$purity&atleast=$atleast&topRange=$topRange&sorting=$sorting&order=desc&page=$random" | grep -o '<a class="preview" href="https://alpha.wallhaven.cc/wallpaper/[0-9]*"' | sed  's .\{24\}  ' | tr -d '"' | awk 'BEGIN { srand() }
+###################################################
+userURL=https://alpha.wallhaven.cc/user/$userr/uploads
+pagecountUSER=$(curl -s "$userURL" | grep -Po '<header\s+class="thumb-listing-page-header">\K.*?(?=</header>)' | grep -o '</span> / [0-9]*' | awk -F '[^0-9]+' '{OFS=" "; for(i=1; i<=NF; ++i) if ($i != "") print($i)}' )
+randomcountUSER=$(shuf -i 1-$pagecountUSER -n1)
+randompageUSER=$(shuf -i 1-$page -n1)
+##################################################
+
+if [ "$page" -le "$pagecountUSER" ] ; then
+
+echo "set $blue$page/$pagecountUSER$nc page to shuffle."
+
+html=$(curl -s "$userURL?page=$andompageUSER" | grep -o '<a class="preview" href="https://alpha.wallhaven.cc/wallpaper/[0-9]*"' | sed  's .\{24\}  ' | tr -d '"' | awk 'BEGIN { srand() }
 { l[NR]=$0 } END { print l[int(rand() * NR + 1)] }'  )
 
-wall=$(curl -s "$html" | grep -Po '(?<=src="//wallpapers.wallhaven.cc/wallpapers/full/)[^"]*(jpg|png|gif|bmp|jpeg)')
+else
 
-cd $dir
+echo "$blue$userr$nc have $blue$pagecountUSER$nc page, set $blue$pagecountUSER/$pagecountUSER$nc to shuffle."
 
-wget -q "$picURL/$wall"
-
-rm=$(head -1 $HOME/bin/wall.txt)
-rm -f $rm
-rm -f wall.txt
-
-gsettings set org.gnome.desktop.background picture-uri "file:///$dir/$wall"
-
-echo $wall > wall.txt
-echo "$blue$wall$nc set to wallpaper";echo "$blue$html$nc"
-
-}
-
-function userwall {
-
-pagecount=$(curl -s "https://alpha.wallhaven.cc/user/$userr/uploads" | grep -Po '<header\s+class="thumb-listing-page-header">\K.*?(?=</header>)' | grep -o '</span> / [0-9]*' | awk -F '[^0-9]+' '{OFS=" "; for(i=1; i<=NF; ++i) if ($i != "") print($i)}' )
-
-randompage=$(shuf -i 1-$pagecount -n1)
-
-html=$(curl -s "https://alpha.wallhaven.cc/user/$userr/uploads?page=$randompage" | grep -o '<a class="preview" href="https://alpha.wallhaven.cc/wallpaper/[0-9]*"' | sed  's .\{24\}  ' | tr -d '"' | awk 'BEGIN { srand() }
+html=$(curl -s "$userURL?page=$randomcountUSER" | grep -o '<a class="preview" href="https://alpha.wallhaven.cc/wallpaper/[0-9]*"' | sed  's .\{24\}  ' | tr -d '"' | awk 'BEGIN { srand() }
 { l[NR]=$0 } END { print l[int(rand() * NR + 1)] }'  )
+
+fi
 
 wall=$(curl -s "$html" | grep -Po '(?<=src="//wallpapers.wallhaven.cc/wallpapers/full/)[^"]*(jpg|png|gif|bmp|jpeg)')
 
@@ -254,9 +269,55 @@ gsettings set org.gnome.desktop.background picture-uri "file:///$dir/$wall"
 echo $wall > wall.txt
 echo "$blue$wall$nc set to wallpaper";echo "$blue$html$nc"
 
-exit 0
+exit 0 
 
 }
+
+                                                                                 function search { # IF You search wallpapers
+
+#######################################
+pagecountSEARCH=$(curl -s "$siteURL/search?q=$search&categories=$categories&purity=$purity&atleast=$atleast&topRange=$topRange&sorting=$sorting&order=desc" | grep -Po '<header\s+class="thumb-listing-page-header">\K.*?(?=</header>)' | grep -o '</span> / [0-9]*' | awk -F '[^0-9]+' '{OFS=" "; for(i=1; i<=NF; ++i) if ($i != "") print($i)}' )
+randomcountSEARCH=$(shuf -i 1-$pagecountSEARCH -n1)
+randompageSEARCH=$(shuf -i 1-$page -n1)
+##################################################################################################################################################
+
+if [ "$page" -le "$pagecountSEARCH" ] ; then
+
+echo "found $blue$pagecountSEARCH page $nc$blue$search$nc wallpapers , set $blue$page/$pagecountSEARCH$nc to shuffle."
+
+html=$(curl -s "$siteURL/search?q=$search&categories=$categories&purity=$purity&atleast=$atleast&topRange=$topRange&sorting=$sorting&order=desc&page=$randompageSEARCH" | grep -o '<a class="preview" href="https://alpha.wallhaven.cc/wallpaper/[0-9]*"' | sed  's .\{24\}  ' | tr -d '"' | awk 'BEGIN { srand() }
+{ l[NR]=$0 } END { print l[int(rand() * NR + 1)] }'  )
+
+echo $html
+
+else
+
+echo "found $blue$pagecountSEARCH page $nc$blue$search$nc wallpapers , set $blue$pagecountSEARCH/$pagecountSEARCH$nc to shuffle."
+
+html=$(curl -s "$siteURL/search?q=$search&categories=$categories&purity=$purity&atleast=$atleast&topRange=$topRange&sorting=$sorting&order=desc&page=$randomcountSEARCH" | grep -o '<a class="preview" href="https://alpha.wallhaven.cc/wallpaper/[0-9]*"' | sed  's .\{24\}  ' | tr -d '"' | awk 'BEGIN { srand() }
+{ l[NR]=$0 } END { print l[int(rand() * NR + 1)] }'  )
+
+fi
+
+wall=$(curl -s "$html" | grep -Po '(?<=src="//wallpapers.wallhaven.cc/wallpapers/full/)[^"]*(jpg|png|gif|bmp|jpeg)')
+
+cd $dir
+
+wget -q "$picURL/$wall"
+
+rm=$(head -1 $HOME/bin/wall.txt)
+rm -f $rm
+#rm -f wall.txt
+
+gsettings set org.gnome.desktop.background picture-uri "file:///$dir/$wall"
+
+echo $wall > wall.txt
+echo "$blue$wall$nc set to wallpaper";echo "$blue$html$nc"
+
+exit 0 
+
+}
+#######################################
 
 ####Functions#####
 
@@ -292,6 +353,12 @@ fi
 if [ -n "$userr" ] ; then
 
 userwall
+
+fi
+
+if [ -n "$search" ] ; then
+
+search
 
 fi
 
