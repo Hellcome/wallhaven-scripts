@@ -32,4 +32,4 @@ use ./wallhaven.sh ./savethis.sh<br>
 
 Tested on Gnome,Elementary,Mint all perfectly work.
 
-<h1></h1>
+<h1>Enjoi</h1>
