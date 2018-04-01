@@ -15,7 +15,8 @@ Save awesome wallpaper, run ./savethis.sh to save it to your wallpaper dir.
 NSFW. <br>
 Save curent wallpaper. <br>
 Search wallpapers. <br>
-Pick User. <br></b>
+Pick User. <br>
+Auto change. <br></b>
 
 examle wallhaven -s toplist -r 1M -c anime -t 10m -p 100 -f girl<br>
 
