@@ -34,7 +34,7 @@ change settings scrips as you like in comment lines<br>
 
 <h2>Examle use this</h2>
 
-<b>$ wallhaven -c anime -s toplist -z 3 -f katana -r 1M<br>
+<b>$ wallhaven -c anime -s favorites -z 1 -f katana <br>
 $ savethis </b> <br>
 
 Tested on Gnome,Elementary,Mint all perfectly work.
