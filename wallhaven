@@ -10,10 +10,10 @@ function HELP {
   echo "$blue-c$nc -- Range options$blue-c$nc$blue | General →  g, general | General and Anime →  ga | General and People →  gp | all →  all | Anime and People →  ap | Anime →  a, anime | People →  p, people$nc"    
   echo "$blue-t$nc -- Time options, use$blue 10 | 10m | 10h$nc"
   echo "$blue-p$nc -- Purity options, use$blue 100 - SWF | 011 - Scetchy | 001 -NSFW | 110 - SFW + Scetchy | 101 - Scetchy + NSFW | 111 - ALL (For NSFW need login, change lines in Needed for NSFW block)"
-  echo "$blue-f$nc -- Search options"
+ # echo "$blue-f$nc -- Search options"
   echo "$blue-u$nc -- Pick user"
   echo "$blue-z$nc -- Set page range to sh"
-  echo "examle$blue ./wallrandom.sh -c a -s toplist  -u Hellcome -z 3 $nc"
+  echo "examle$blue ./wallrandom.sh -c a -s toplist  -u Hellcome -z 3 -30m$nc"
   echo  
   exit 1
 }
@@ -61,11 +61,11 @@ random=$(shuf -i 1-$page -n1)
 
 
 ##Wallhaven setings
-sorting=toplist #Relevance / Random / Date Added / Views / Favorites / Toplist
+sorting=favorites #Relevance / Random / Date Added / Views / Favorites / Toplist
 purity=100 
-categories=111 # 100 - General / 110 - General + Anime / 101 - General + People / 111 - ALL / 011 - Anime + People / 010 - Anime / 001 - People /
-attleast=1920x1080 # your resolution
-topRange=6M # sort by date 1d / 3d / 1w / 1M / 3M / 6M / 12M / 1y
+categories=010 # 100 - General / 110 - General + Anime / 101 - General + People / 111 - ALL / 011 - Anime + People / 010 - Anime / 001 - People /
+attleast= # your resolution
+topRange=1w # sort by date 1d / 3d / 1w / 1M / 3M / 6M / 12M / 1y
 search=''
 userr=$OPTARG
 
@@ -141,7 +141,18 @@ purity=$OPTARG
         echo "$red invalid parameter ($purity)$nc use$blue 100 - SWF | 011 - Scetchy | 001 -NSFW | 110 - SFW + Scetchy | 101 - Scetchy + NSFW | 111 - ALL (For NSFW need login, change lines in Needed for NSFW block)$nc" ; exit 0 
         else 
         echo "purity set to $blue$purity$nc"
+        cd /tmp/
+        login "$USER" "$PASS"
+
+      if [ -f /tmp/cookies.txt ] ; then
+
+        echo "$(tput setaf 4)succes login $USER$nc"
+        else
+        echo "$(tput setaf 4)pls check you login and password $USER$nc"
+       fi
         fi 
+
+
 } #purity
 
                                                                              function loop {
@@ -149,6 +160,10 @@ purity=$OPTARG
 time=$OPTARG
 echo "auto change set to $blue$time$nc" 
 } #time
+
+
+                                                                      
+
 
                                                                              function user {
 
@@ -166,158 +181,152 @@ echo "search $blue$search$nc"
 page=$OPTARG
 } #page
 
-                                                                             function elsepurity { # IF you use NSFW
+                                                                             function load {  
 
-cd $dir  
-
-login "$USER" "$PASS"
-
-if [ -z "$USER" ]  ; then
-
-echo "$(tput setaf 4)Pls check login and password $USER$nc"
-exit 1;
-else
-echo "$(tput setaf 4)successful login $USER$nc"
+if [ "$purity" == "001" ]
+then
+wall=$(cd /tmp/ && curl -s --cookie cookies.txt "$html" | grep -Po '(?<=src="//wallpapers.wallhaven.cc/wallpapers/full/)[^"]*(jpg|png|gif|bmp|jpeg)')
+else 
+wall=$(curl -s "$html" | grep -Po '(?<=src="//wallpapers.wallhaven.cc/wallpapers/full/)[^"]*(jpg|png|gif|bmp|jpeg)')
 fi
-
-html=$(curl -s --cookie cookies.txt "$site/search?q=$search&categories=$categories&purity=$purity&atleast=$atleast&topRange=$topRange&sorting=$sorting&order=desc&page=$random" | grep -o '<a class="preview" href="https://alpha.wallhaven.cc/wallpaper/[0-9]*"' | sed  's .\{24\}  ' | tr -d '"' | awk 'BEGIN { srand() }
-{ l[NR]=$0 } END { print l[int(rand() * NR + 1)] }' )
-
-
-wall=$(curl -s --cookie cookies.txt "$html" | grep -Po '(?<=src="//wallpapers.wallhaven.cc/wallpapers/full/)[^"]*(jpg|png|gif|bmp|jpeg)')
-
+cd $dir
 wget -q "$picURL/$wall"
-
 rm=$(head -1 $HOME/bin/wall.txt)
 rm -f $rm
-rm -f wall.txt
-rm -f cookies.txt
-rm -f login
-rm -f login.1
-
+#rm -f wall.txt
 gsettings set org.gnome.desktop.background picture-uri "file:///$dir/$wall"
-
 echo $wall > wall.txt
 echo "$blue$wall$nc set to wallpaper";echo "$blue$html$nc"
-                                                                 
+
+}
+
+
+                                                                          function defaultNSFW { # IF you use NSFW
+while true ; do
+cd /tmp/
+html=$(curl -s --cookie cookies.txt "$siteURL/search?q=&categories=$categories&purity=$purity&atleast=$atleast&topRange=$topRange&sorting=$sorting&order=desc&page=$random" | grep -o '<a class="preview" href="https://alpha.wallhaven.cc/wallpaper/[0-9]*"' | sed  's .\{24\}  ' | tr -d '"' | awk 'BEGIN { srand() }
+{ l[NR]=$0 } END { print l[int(rand() * NR + 1)] }'  )
+echo "set $blue$page page to shuffle"
+load
+done
+exit 0
+                                                           
 }
 
 
                                                                            function default { # Default function
-
-randompage=$(shuf -i 1-$page -n1)
-
-html=$(curl -s "$siteURL/search?q=&categories=$categories&purity=$purity&atleast=$atleast&topRange=$topRange&sorting=$sorting&order=desc&page=$randompage" | grep -o '<a class="preview" href="https://alpha.wallhaven.cc/wallpaper/[0-9]*"' | sed  's .\{24\}  ' | tr -d '"' | awk 'BEGIN { srand() }
+while true ; do
+html=$(curl -s "$siteURL/search?q=&categories=$categories&purity=$purity&atleast=$atleast&topRange=$topRange&sorting=$sorting&order=desc&page=$random" | grep -o '<a class="preview" href="https://alpha.wallhaven.cc/wallpaper/[0-9]*"' | sed  's .\{24\}  ' | tr -d '"' | awk 'BEGIN { srand() }
 { l[NR]=$0 } END { print l[int(rand() * NR + 1)] }'  )
-
 echo "set $blue$page page to shuffle"
-
-wall=$(curl -s "$html" | grep -Po '(?<=src="//wallpapers.wallhaven.cc/wallpapers/full/)[^"]*(jpg|png|gif|bmp|jpeg)')
-
-cd $dir
-
-wget -q "$picURL/$wall"
-
-rm=$(head -1 $HOME/bin/wall.txt)
-rm -f $rm
-rm -f wall.txt
-
-gsettings set org.gnome.desktop.background picture-uri "file:///$dir/$wall"
-
-echo $wall > wall.txt
-echo "$blue$wall$nc set to wallpaper";echo "$blue$html$nc"
-                                                           
+load
+done
+exit 0                                                        
 }
 
-                                                                         function userwall { # IF you pick User
-
-###################################################
-userURL=https://alpha.wallhaven.cc/user/$userr/uploads
-pagecountUSER=$(curl -s "$userURL" | grep -Po '<header\s+class="thumb-listing-page-header">\K.*?(?=</header>)' | grep -o '</span> / [0-9]*' | awk -F '[^0-9]+' '{OFS=" "; for(i=1; i<=NF; ++i) if ($i != "") print($i)}' )
-randomcountUSER=$(shuf -i 1-$pagecountUSER -n1)
-randompageUSER=$(shuf -i 1-$page -n1)
+                                                                           function userwall { # IF you pick User
+while true ; do
 ##################################################
-
-if [ "$page" -le "$pagecountUSER" ] ; then
-
-echo "set $blue$page/$pagecountUSER$nc page to shuffle."
-
-html=$(curl -s "$userURL?page=$andompageUSER" | grep -o '<a class="preview" href="https://alpha.wallhaven.cc/wallpaper/[0-9]*"' | sed  's .\{24\}  ' | tr -d '"' | awk 'BEGIN { srand() }
-{ l[NR]=$0 } END { print l[int(rand() * NR + 1)] }'  )
-
+cd /tmp/ && echo $userr >> tmpUSER
+lastUSER=$(cd /tmp/ && tail -n2  tmpUSER | head -1)
+###############################################
+userURL=https://alpha.wallhaven.cc/user/$userr/uploads
+####################################################
+if [ -f /tmp/tmpUSER ] && [ -f /tmp/userPAGE ] && [ "$userr" == "$lastUSER" ]
+then
+ userPAGE=$(cd /tmp/ && tail -n1 userPAGE)
+ randomcountUSER=$(shuf -i 1-$userPAGE -n1)
+ randompageUSER=$(shuf -i 1-$page -n1)
 else
-
-echo "$blue$userr$nc have $blue$pagecountUSER$nc page, set $blue$pagecountUSER/$pagecountUSER$nc to shuffle."
-
-html=$(curl -s "$userURL?page=$randomcountUSER" | grep -o '<a class="preview" href="https://alpha.wallhaven.cc/wallpaper/[0-9]*"' | sed  's .\{24\}  ' | tr -d '"' | awk 'BEGIN { srand() }
-{ l[NR]=$0 } END { print l[int(rand() * NR + 1)] }'  )
-
+ pagecountUSER=$(cd /tmp/ && curl -s "$userURL" | grep -Po '<header\s+class="thumb-listing-page-header">\K.*?(?=</header>)' | grep -o '</span> / [0-9]*' | awk -F '[^0-9]+' '{OFS=" "; for(i=1; i<=NF; ++i) if ($i != "") print($i)}' >> userPAGE)
+ userPAGE=$(cd /tmp/ && tail -n1 userPAGE)
+ randomcountUSER=$(shuf -i 1-$userPAGE -n1)
+ randompageUSER=$(shuf -i 1-$page -n1)
 fi
-
-wall=$(curl -s "$html" | grep -Po '(?<=src="//wallpapers.wallhaven.cc/wallpapers/full/)[^"]*(jpg|png|gif|bmp|jpeg)')
-
-cd $dir
-
-wget -q "$picURL/$wall"
-
-rm=$(head -1 $HOME/bin/wall.txt)
-rm -f $rm
-#rm -f wall.txt
-
-gsettings set org.gnome.desktop.background picture-uri "file:///$dir/$wall"
-
-echo $wall > wall.txt
-echo "$blue$wall$nc set to wallpaper";echo "$blue$html$nc"
-
+if [ "$page" -gt "$userPAGE" ]  ; then
+page=$userPAGE
+echo "$blue$userr$nc have only $blue$userPAGE$nc page, set $blue$userPAGE/$userPAGE$nc to shuffle."
+ else
+echo "$blue$userr$nc have $blue$userPAGE$nc page, set $blue$page/$userPAGE$nc to shuffle."
+fi
+randomcountUSER=$(shuf -i 1-$userPAGE -n1)
+randompageUSER=$(shuf -i 1-$page -n1)
+html=$(curl -s "$userURL?page=$randompageUSER" | grep -o '<a class="preview" href="https://alpha.wallhaven.cc/wallpaper/[0-9]*"' | sed  's .\{24\}  ' | tr -d '"' | awk 'BEGIN { srand() }
+{ l[NR]=$0 } END { print l[int(rand() * NR + 1)] }'  )
+ load
+done
 exit 0 
-
 }
 
-                                                                                 function search { # IF You search wallpapers
+                                                                             function search { # IF You search wallpapers
 
-#######################################
-pagecountSEARCH=$(curl -s "$siteURL/search?q=$search&categories=$categories&purity=$purity&atleast=$atleast&topRange=$topRange&sorting=$sorting&order=desc" | grep -Po '<header\s+class="thumb-listing-page-header">\K.*?(?=</header>)' | grep -o '</span> / [0-9]*' | awk -F '[^0-9]+' '{OFS=" "; for(i=1; i<=NF; ++i) if ($i != "") print($i)}' )
-randomcountSEARCH=$(shuf -i 1-$pagecountSEARCH -n1)
-randompageSEARCH=$(shuf -i 1-$page -n1)
+while true ; do
 ##################################################################################################################################################
-
-if [ "$page" -le "$pagecountSEARCH" ] ; then
-
-echo "found $blue$pagecountSEARCH page $nc$blue$search$nc wallpapers , set $blue$page/$pagecountSEARCH$nc to shuffle."
-
-html=$(curl -s "$siteURL/search?q=$search&categories=$categories&purity=$purity&atleast=$atleast&topRange=$topRange&sorting=$sorting&order=desc&page=$randompageSEARCH" | grep -o '<a class="preview" href="https://alpha.wallhaven.cc/wallpaper/[0-9]*"' | sed  's .\{24\}  ' | tr -d '"' | awk 'BEGIN { srand() }
-{ l[NR]=$0 } END { print l[int(rand() * NR + 1)] }'  )
-
-echo $html
-
+##################################################
+cd /tmp/ && echo $search >> tmpSEARCH
+lastSEARCH=$(cd /tmp/ && tail -n2  tmpSEARCH | head -1)
+###############################################
+if [ -f /tmp/tmpSEARCH ] && [ -f /tmp/searchPAGE ] && [ "$search" == "$lastSEARCH" ]
+then
+  searchPAGE=$(cd /tmp/ && tail -n1 searchPAGE)
+  randomcountSEARCH=$(shuf -i 1-$searchPAGE -n1)
+  randompageSEARCH=$(shuf -i 1-$page -n1)
 else
-
-echo "found $blue$pagecountSEARCH page $nc$blue$search$nc wallpapers , set $blue$pagecountSEARCH/$pagecountSEARCH$nc to shuffle."
-
-html=$(curl -s "$siteURL/search?q=$search&categories=$categories&purity=$purity&atleast=$atleast&topRange=$topRange&sorting=$sorting&order=desc&page=$randomcountSEARCH" | grep -o '<a class="preview" href="https://alpha.wallhaven.cc/wallpaper/[0-9]*"' | sed  's .\{24\}  ' | tr -d '"' | awk 'BEGIN { srand() }
-{ l[NR]=$0 } END { print l[int(rand() * NR + 1)] }'  )
-
+  countpageSEARCH=$(cd /tmp/ && curl -s "$siteURL/search?q=$search&categories=$categories&purity=$purity&sorting=$sorting&order=desc" | grep -Po '<header\s+class="thumb-listing-page-header">\K.*?(?=</header>)' | grep -o '</span> / [0-9]*' | awk -F '[^0-9]+' '{OFS=" "; for(i=1; i<=NF; ++i) if ($i != "") print($i)}' >> searchPAGE )
+  searchPAGE=$(cd /tmp/ && tail -n1 searchPAGE)
+  randomcountSEARCH=$(shuf -i 1-$searchPAGE -n1)
+  randompageSEARCH=$(shuf -i 1-$page -n1)
+fi
+if [ "$page" -gt "$searchPAGE" ] ; then
+ page=$searchPAGE
+ echo "$nc$blue$search$nc wallpapers have $blue$searchPAGE page only, set $blue$searchPAGE/$searchPAGE$nc to shuffle."
+else
+ echo "found $blue$searchPAGE page $blue$search$nc, set $blue$page/$searchPAGE$nc to shuffle."
 fi
 
-wall=$(curl -s "$html" | grep -Po '(?<=src="//wallpapers.wallhaven.cc/wallpapers/full/)[^"]*(jpg|png|gif|bmp|jpeg)')
-
-cd $dir
-
-wget -q "$picURL/$wall"
-
-rm=$(head -1 $HOME/bin/wall.txt)
-rm -f $rm
-#rm -f wall.txt
-
-gsettings set org.gnome.desktop.background picture-uri "file:///$dir/$wall"
-
-echo $wall > wall.txt
-echo "$blue$wall$nc set to wallpaper";echo "$blue$html$nc"
-
-exit 0 
-
+ html=$(curl -s "$siteURL/search?q=$search&categories=$categories&purity=$purity&sorting=$sorting&order=desc&page=$randompageSEARCH" | grep -o '<a class="preview" href="https://alpha.wallhaven.cc/wallpaper/[0-9]*"' | sed  's .\{24\}  ' | tr -d '"' | awk 'BEGIN { srand() }
+{ l[NR]=$0 } END { print l[int(rand() * NR + 1)] }'  )
+  load
+done
+ exit 0
 }
-#######################################
+#####
+#END#
+#####        
+                                                                       function searchNSFW { # IF You search NSFW wallpapers
+
+while true ; do
+##################################################
+cd /tmp/ && echo $search >> tmpSEARCH
+lastSEARCH=$(cd /tmp/ && tail -n2  tmpSEARCH | head -1)
+###############################################
+if [ -f /tmp/tmpSEARCH ] && [ -f /tmp/searchPAGE ] && [ "$search" == "$lastSEARCH" ]
+then
+  searchPAGE=$(cd /tmp/ && tail -n1 searchPAGE)
+  randomcountSEARCH=$(shuf -i 1-$searchPAGE -n1)
+  randompageSEARCH=$(shuf -i 1-$page -n1)
+else
+  countpageSEARCH=$(cd /tmp/ && curl -s --cookie cookies.txt "$siteURL/search?q=$search&categories=$categories&purity=$purity&sorting=$sorting&order=desc" | grep -Po '<header\s+class="thumb-listing-page-header">\K.*?(?=</header>)' | grep -o '</span> / [0-9]*' | awk -F '[^0-9]+' '{OFS=" "; for(i=1; i<=NF; ++i) if ($i != "") print($i)}' >> searchPAGE )
+  searchPAGE=$(cd /tmp/ && tail -n1 searchPAGE)
+  randomcountSEARCH=$(shuf -i 1-$searchPAGE -n1)
+  randompageSEARCH=$(shuf -i 1-$page -n1)
+fi
+if [ "$page" -gt "$searchPAGE" ] ; then
+ page=$searchPAGE
+ echo "$nc wallpapers have $blue$searchPAGE page only, set $blue$searchPAGE/$searchPAGE$nc to shuffle."
+else
+ echo "found $blue$searchPAGE page $blue$search$nc, set $blue$page/$searchPAGE$nc to shuffle."
+fi
+
+ html=$(curl -s --cookie cookies.txt "$siteURL/search?q=$search&categories=$categories&purity=$purity&sorting=$sorting&order=desc&page=$randompageSEARCH" | grep -o '<a class="preview" href="https://alpha.wallhaven.cc/wallpaper/[0-9]*"' | sed  's .\{24\}  ' | tr -d '"' | awk 'BEGIN { srand() }
+{ l[NR]=$0 } END { print l[int(rand() * NR + 1)] }'  )
+  load
+done
+ exit 0
+}
+#####
+#END#
+#####                                                                                                                                                            
 
 ####Functions#####
 
@@ -340,14 +349,11 @@ esac
 done
 
 
+######
 while true ; do
 
-######
-
-if  [ "$purity" == 001 ] ; then
-
-elsepurity 
-
+if [ -n "${time}" ] ; then 
+sleep $time
 fi
 
 if [ -n "$userr" ] ; then
@@ -356,24 +362,20 @@ userwall
 
 fi
 
-if [ -n "$search" ] ; then
+if [ -n "$search" -a "$purity" == "001" ] ; then
 
-search
+searchNSFW
+
+fi
+
+if [ "$purity" == "001" ] ; then
+
+defaultNSFW
 
 fi
 
 default
 
 #######
-
-## Time functions
-
-	if [[ -z "${time}" ]] ; then #If time is not set, break loop (so the script finishes).
-		break
-	fi
-	sleep $time
-  
-
-done
-
-exit
+done  
+exit 0
