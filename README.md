@@ -30,6 +30,13 @@ use -h to see help
 copy scripts to you home/bin or other <br>
 chmod +x ~/bin/wallhaven<br>
 chmod +x ~/savethis<br>
+
+<b>if you are using ~/bin dir you should add home path to ~/.bashrc<br>
+
+if [ -d "$HOME/bin" ] ; then<br>
+    PATH="$HOME/bin:$PATH"<br>
+fi</b></br>
+
 change settings scrips as you like in comment lines<br>
 
 <h2>Examle use this</h2>
